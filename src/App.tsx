@@ -34,10 +34,19 @@ function App() {
         if (event.key === "Enter") {
 
             // Lowercase the guess to prevent case conflicts
-            const lowerGuess = guess.toLowerCase();
+            const lowerGuess = guess.toLowerCase().trim();
 
             // If they've already guessed this word, ignore it
             if (guesses.includes(lowerGuess)) {
+                setGuess("");
+                return;
+            }
+
+            // If the guess is not between the two closest words, ignore it
+            if (preGuesses.length > 0 && lowerGuess < preGuesses[preGuesses.length-1] ||
+                postGuesses.length > 0 && lowerGuess > postGuesses[postGuesses.length-1]
+            ) {
+                setMessage("Your guess was before/after previous guesses.")
                 setGuess("");
                 return;
             }
@@ -74,21 +83,21 @@ function App() {
             <h1>Guess the Word</h1>
             <div className="card">
                 {preGuesses.map((x) => {
-                    return <p key={`word-${x}`}>{x}</p>;
+                    return <p className="guess" key={`word-${x}`}>{x}</p>;
                 })}
                 {solved && <h3>✅ {solution} ✅</h3>}
                 {!solved && <p>
-                    <input
+                    {directionIndicator} <input
                         type="text"
                         placeholder="Guess a word"
                         value={guess}
                         onChange={(evt) => setGuess(evt.currentTarget.value)}
                         onKeyDown={handleKeyPress}
-                    />{directionIndicator}
+                    /> {directionIndicator}
                 </p>}
                 <p>{message}</p>
                 {postGuesses.map((x) => {
-                    return <p key={`word-${x}`}>{x}</p>;
+                    return <p className="guess" key={`word-${x}`}>{x}</p>;
                 })}
                 <p>Guess count: {guesses.length}</p>
             </div>

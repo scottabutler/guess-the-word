@@ -6,7 +6,7 @@
   "homepage": "https://scottabutler.github.io/guess-the-word",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build --base=https://scottabutler.github.io/guess-the-word/",
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",

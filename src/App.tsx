@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { WordList } from "./wordlist";
+import { PopularWords } from "./popularWords";
 
 function App() {
-    const [guesses, setGuesses] = useState<string[]>([]); //"width", "star", "apple", "thus"]);
+    const [guesses, setGuesses] = useState<string[]>([]);
     const [guess, setGuess] = useState("");
     const [message, setMessage] = useState("");
-    //const [submittedGuess, setSubmittedGuess] = useState("");
-    const [solution, _setSolution] = useState(WordList[randomIntFromInterval(0, WordList.length - 1)]);
+    const [lastGuess, setLastGuess] = useState("");
+    const [solved, setSolved] = useState(false);
+
+    const [solution, _setSolution] = useState(PopularWords[randomIntFromInterval(0, PopularWords.length - 1)]);
 
     const [preGuesses, setPreGuesses] = useState<string[]>([]);
     const [postGuesses, setPostGuesses] = useState<string[]>([]);
-
-    //const preGuesses2 = guesses.filter((x) => x < submittedGuess).sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
 
     useEffect(() => {
         setPreGuesses(guesses.filter((x) => x < solution).sort((a, b) => a < b ? -1 : a > b ? 1 : 0));
@@ -26,28 +26,48 @@ function App() {
     }
 
     const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if (event.key === "Enter") {
+        // Clear any existing message
+        if (message)
             setMessage("");
-            if (guesses.includes(guess)) {
+
+        // Activate on Enter press
+        if (event.key === "Enter") {
+
+            // Lowercase the guess to prevent case conflicts
+            const lowerGuess = guess.toLowerCase();
+
+            // If they've already guessed this word, ignore it
+            if (guesses.includes(lowerGuess)) {
                 setGuess("");
                 return;
             }
-            if (WordList.includes(guess)) {
 
-                setGuesses([guess, ...guesses]);
+            // Only check words that exist in the list
+            if (PopularWords.includes(lowerGuess)) {
 
-                //setSubmittedGuess(guess);
+                // Add it to the list of guesses
+                setGuesses([lowerGuess, ...guesses]);
+                setLastGuess(lowerGuess);
 
-                if (guess === solution) {
-                    setMessage(`You win! You took ${guesses.length+1} guesses.`)
+                // Check if they've found the solution
+                if (lowerGuess === solution) {
+                    setSolved(true);
+                    setMessage(`You win! You took ${guesses.length+1} guess(es).`)
                 }
 
+                // Clear the input field ready for another guess
                 setGuess("");
             } else {
                 setMessage("Word not in list");
             }
         }
     };
+
+    const directionIndicator = !lastGuess
+        ? <></>
+        : lastGuess > solution
+            ? <span>⬆️</span>
+            : <span>⬇️</span>
 
     return (
         <>
@@ -56,15 +76,16 @@ function App() {
                 {preGuesses.map((x) => {
                     return <p key={`word-${x}`}>{x}</p>;
                 })}
-                <p>
+                {solved && <h3>✅ {solution} ✅</h3>}
+                {!solved && <p>
                     <input
                         type="text"
                         placeholder="Guess a word"
                         value={guess}
                         onChange={(evt) => setGuess(evt.currentTarget.value)}
                         onKeyDown={handleKeyPress}
-                    />
-                </p>
+                    />{directionIndicator}
+                </p>}
                 <p>{message}</p>
                 {postGuesses.map((x) => {
                     return <p key={`word-${x}`}>{x}</p>;

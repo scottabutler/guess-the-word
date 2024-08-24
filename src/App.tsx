@@ -6,15 +6,17 @@ function App() {
     const [guesses, setGuesses] = useState<string[]>([]); //"width", "star", "apple", "thus"]);
     const [guess, setGuess] = useState("");
     const [message, setMessage] = useState("");
-    const [submittedGuess, setSubmittedGuess] = useState("");
+    //const [submittedGuess, setSubmittedGuess] = useState("");
     const [solution, _setSolution] = useState(WordList[randomIntFromInterval(0, WordList.length - 1)]);
 
     const [preGuesses, setPreGuesses] = useState<string[]>([]);
     const [postGuesses, setPostGuesses] = useState<string[]>([]);
 
+    //const preGuesses2 = guesses.filter((x) => x < submittedGuess).sort((a, b) => a < b ? -1 : a > b ? 1 : 0);
+
     useEffect(() => {
-        setPreGuesses(guesses.filter((x) => x < submittedGuess).sort((a, b) => a < b ? -1 : a > b ? 1 : 0));
-        setPostGuesses(guesses.filter((x) => x > submittedGuess).sort((a, b) => a < b ? -1 : a > b ? 1 : 0));
+        setPreGuesses(guesses.filter((x) => x < solution).sort((a, b) => a < b ? -1 : a > b ? 1 : 0));
+        setPostGuesses(guesses.filter((x) => x > solution).sort((a, b) => a < b ? -1 : a > b ? 1 : 0));
     }, [guesses]);
 
     // https://stackoverflow.com/a/7228322
@@ -31,14 +33,16 @@ function App() {
                 return;
             }
             if (WordList.includes(guess)) {
-                setSubmittedGuess(guess);
 
                 setGuesses([guess, ...guesses]);
-                setGuess("");
 
-                if (submittedGuess === solution) {
-                    setMessage(`You win! You took ${guesses.length} guesses.`)
+                //setSubmittedGuess(guess);
+
+                if (guess === solution) {
+                    setMessage(`You win! You took ${guesses.length+1} guesses.`)
                 }
+
+                setGuess("");
             } else {
                 setMessage("Word not in list");
             }
@@ -47,7 +51,7 @@ function App() {
 
     return (
         <>
-            <h1>{solution}</h1>
+            <h1>Guess the Word</h1>
             <div className="card">
                 {preGuesses.map((x) => {
                     return <p key={`word-${x}`}>{x}</p>;

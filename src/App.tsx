@@ -44,7 +44,7 @@ function App() {
 
             // If the guess is not between the two closest words, ignore it
             if (preGuesses.length > 0 && lowerGuess < preGuesses[preGuesses.length-1] ||
-                postGuesses.length > 0 && lowerGuess > postGuesses[postGuesses.length-1]
+                postGuesses.length > 0 && lowerGuess > postGuesses[0]
             ) {
                 setMessage("Your guess was before/after previous guesses.")
                 setGuess("");
@@ -78,6 +78,8 @@ function App() {
             ? <span>⬆️</span>
             : <span>⬇️</span>
 
+    const letterDashes = solution.split('').map(_ => '_ ');
+
     return (
         <>
             <h1>Guess the Word</h1>
@@ -96,6 +98,7 @@ function App() {
                     /> {directionIndicator}
                 </p>}
                 <p>{message}</p>
+                {guesses.length >= 20 && <p>Hint: {letterDashes}</p>}
                 {postGuesses.map((x) => {
                     return <p className="guess" key={`word-${x}`}>{x}</p>;
                 })}
